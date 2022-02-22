@@ -1,10 +1,10 @@
 package com.mercadolivro.controller
 
 import com.mercadolivro.controller.request.PostCustomerRequest
+import com.mercadolivro.controller.request.PutCustomerRequest
 import com.mercadolivro.model.CustomerModel
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import javax.websocket.server.PathParam
 
 @RestController
 @RequestMapping("customer")
@@ -20,7 +20,7 @@ class CustomerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody customerModel: PostCustomerRequest) {
-        var id = if (customers.isEmpty()) {
+        val id = if (customers.isEmpty()) {
             1
         } else {
             customers.last().id.toInt() + 1
@@ -32,5 +32,14 @@ class CustomerController {
     @GetMapping("/{id}")
     fun getCustomer(@PathVariable id: String): CustomerModel {
         return customers.first { customer -> customer.id == id }
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun update(@PathVariable id: String, @RequestBody customerModel: PutCustomerRequest) {
+        customers.first { customer -> customer.id == id }.let {
+            it.name = customerModel.name
+            it.email = customerModel.email
+        }
     }
 }
